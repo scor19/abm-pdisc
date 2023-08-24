@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import { React, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -11,18 +10,35 @@ function Añadir() {
     sueldo: "",
   });
 
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setEmpleado((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const navigate = useNavigate();
-
   const handleClick = async (e) => {
     e.preventDefault();
-    try {
-      await axios.post("http://localhost:8800/empleados", empleado);
-    } catch (err) {
-      console.log(err);
+    if (
+      !empleado.nombre ||
+      !empleado.apellido ||
+      !empleado.direccion ||
+      empleado.sueldo == null
+    ) {
+      alert("No pueden haber campos vacios");
+    } else if (
+      !/^[A-Za-z]+ [0-9]+$/.test(empleado.direccion) &&
+      !/^[A-Za-z0-9]+ [A-Za-z0-9]+ [0-9]+$/.test(empleado.direccion)
+    ) {
+      alert(
+        "La direccion debe cumplir el formato nombre/altura o nombre/nombre/altura"
+      );
+    } else {
+      try {
+        await axios.post("http://localhost:8800/empleados", empleado);
+        window.location.reload();
+        navigate("/");
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
